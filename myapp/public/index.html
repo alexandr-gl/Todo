@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todo</title>
+    <link rel="stylesheet" href="stylesheets/style.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="javascripts/underscore.js"></script>
+    <script src="javascripts/scrypt2.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1 class="header_tittleh1"> Todo </h1>
+    </header>
+    <div class="content" id="content">
+        <div class="content__adding-task">
+            <input type="checkbox" id="test" class="unchecked"><label for="test">All</label>
+            <input  class="task-list__input" type="text" placeholder="What needs to be done" id="input" />
+            <button id="add" class="btn">Add</button>
+        </div>
+        <div class="content__list" id="content__list">
+            <ul class="task-list__tasks" id="task-list">
+            </ul>
+        </div>
+        <div id="pagingControls">
+        </div>
+    </div>
+    <footer class="footer">
+        <div id="done">Done &thinsp;<span class="done">0</span>&emsp;</div>
+        <div id="undone">Undone &thinsp;<span class="undone">0</span>&emsp;</div>
+        <button class="footer__button btn" id="all">All</button>
+        <button class="footer__button btn" id="active">Active</button>
+        <button class="footer__button btn" id="completed">Completed</button>
+        <button class="footer__button btn" id="delete">Delete checked</button>
+    </footer>
+</body>
+</html>
