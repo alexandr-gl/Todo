@@ -32,7 +32,9 @@ $(function () {
         if ((/\S/.test(data) && data.length != 0)) {
             if(idx < 5) {
                 $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input type="checkbox" id="test${idx}"><label for="test${idx}"></label><span id="span${idx}">${data}</span><button class="btn del">Del</button></li>`);
-                taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
+                let task = new Todo(idx, data, false);
+                taskArray.push(task);
+                //taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
                 $("#input").val("");
                 idx++;
                 $('.adding-task-li').remove();
@@ -41,17 +43,8 @@ $(function () {
                     pagination();
                 }
                 $('#test').prop('checked', false);
-                $.ajax({
-                    type: 'POST',
-                    data: {todo: Todo},
-                    url: '/users',
-                    success: function(){
-                        alert('Load was performed.');
-                    },
-                    error: function (error) {
-                        console.log('Error', error)
-                    }
-                });
+
+                add();
             }
             else {
                 taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
@@ -73,6 +66,21 @@ $(function () {
         {
             taskArray[i].id = i;
         }
+    }
+
+    function add() {
+        $.ajax({
+            type: 'POST',
+            //data: {text: 'lol kek cheburek'},
+            data: taskArray[idx],
+            url: '/users',
+            success: function(){
+                alert('Load was performed.');
+            },
+            error: function (error) {
+                console.log('Error', error)
+            }
+        });
     }
     function reloadTList() {
         if(buttonIDtemp == 'alltasks')

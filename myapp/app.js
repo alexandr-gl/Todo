@@ -4,10 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var mongoose = require('mongoose');
 var index = require('./routes/index');
 var users = require('./routes/users');
-
+var taskSchema = require('./routes/model')
 var app = express();
 
 // view engine setup
@@ -43,18 +43,26 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-// mongoClient.connect(url, function(err, db){
-//
-//     var collection = db.collection("tasks");
-//     var task = {id: "Tom", text: 23, state: false};
-//     collection.insertOne(task, function(err, result){
-//
-//         if(err){
-//             return console.log(err);
-//         }
-//         console.log(result.ops);
-//         db.close();
-//     });
-// });
+var db = mongoose.connect('mongodb://localhost/todo', {
+    useMongoClient: true
+});
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+    console.log('Running DB');
+});
 
 module.exports = app;
+
+var MongoClient = require('mongodb').MongoClient
+    , assert = require('assert');
+
+// var task = new taskSchema({
+//    id: 10, text: 'b', state: false
+// });
+//
+// task.save(function (err, task, affected) {
+//     if(err) throw err
+//         taskSchema.findOne({text: 'b'}, function(err, tester){
+//         console.log(tester);
+//         })
+// })

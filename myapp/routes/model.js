@@ -1,10 +1,12 @@
-let express = require('express');
-let mongoose = require('mongoose');
-
-let taskSchema = new mongoose.Schema( {
+var express = require('express');
+var mongoose = require('mongoose');
+var taskSchema = new mongoose.Schema( {
     id: Number,
     text: String,
     state: Boolean
 } );
-let modelTask = mongoose.model('newTask', taskSchema);
+var modelTask = mongoose.model('newTask', taskSchema);
 module.exports = modelTask;
+
+
+
