@@ -24,6 +24,7 @@ $(function () {
             this.state = state;
         }
     }
+    get();
     function addTasks() {
         let size = _.size(taskArray);
         data = $("#input").val();
@@ -44,7 +45,7 @@ $(function () {
                 }
                 $('#test').prop('checked', false);
 
-                add();
+                add(task);
             }
             else {
                 taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
@@ -67,12 +68,24 @@ $(function () {
             taskArray[i].id = i;
         }
     }
+    function get(){
+        $.ajax({
+            type: 'GET',
+            url: '/users',
+            success: function(){
+                alert('Tasks were got');
+            },
+            error: function (error) {
+                console.log('Error', error)
+            }
+        });
+    }
 
-    function add() {
+    function add(newItem) {
         $.ajax({
             type: 'POST',
-            //data: {text: 'lol kek cheburek'},
-            data: taskArray[idx],
+            //data: {data:object},
+            data: newItem,
             url: '/users',
             success: function(){
                 alert('Load was performed.');

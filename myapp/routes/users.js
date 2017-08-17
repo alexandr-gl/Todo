@@ -2,18 +2,27 @@ var express = require('express');
 var modelTask = require('./model');
 var router = express.Router();
 
-/* GET users listing. */
+//GET users listing.
 router.get('/', function(req, res, next) {
-  if(err){
-    res.status(500).send(err);
-  }
-  res.status(200).send('respond with a resource', req.data);
+    console.log("Sucsess");
+    return modelTask.find(function (err, articles) {
+        if (!err) {
+            return res.send(newtask);
+        }
+    });
+    // var taski = db.getCollection('newtasks').find();
+    // console.log(taski);
 });
 
 router.post('/', function(req, res, next) {
-   if(err) {
-       res.status(500).send(err);
-   }
-    res.status(200).send('respond with a resource', req.data);
+    var newTask = new modelTask({
+        id: req.body.id,
+        text: req.body.text,
+        state: req.body.state
+    });
+
+    newTask.save(function (err) {
+       if(!err) {console.log('Success');}
+    });
 });
 module.exports = router;

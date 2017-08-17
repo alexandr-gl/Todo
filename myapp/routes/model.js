@@ -8,5 +8,3 @@ var taskSchema = new mongoose.Schema( {
 var modelTask = mongoose.model('newTask', taskSchema);
 module.exports = modelTask;
 
-
-

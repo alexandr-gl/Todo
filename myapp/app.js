@@ -65,4 +65,8 @@ var MongoClient = require('mongodb').MongoClient
 //         taskSchema.findOne({text: 'b'}, function(err, tester){
 //         console.log(tester);
 //         })
-// })
+// });
+//
+// var collection = db.collection('newtasks');
+//
+// var s = collection.find([]);
