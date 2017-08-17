@@ -15,14 +15,21 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-    var newTask = new modelTask({
-        id: req.body.id,
-        text: req.body.text,
-        state: req.body.state
-    });
-
-    newTask.save(function (err) {
-       if(!err) {console.log('Success');}
-    });
+    // var newTask = new modelTask({
+    //     id: req.body.id,
+    //     text: req.body.text,
+    //     state: req.body.state
+    // });
+    //
+    // newTask.save(function (err) {
+    //    if(!err) {console.log('Success');}
+    // });
+    var post = req.body;
+    modelTask.create(post, function (err, result) {
+        if(err){
+            return res.status(500).send(err)
+        }
+        res.status(500).send(response)
+    })
 });
 module.exports = router;
