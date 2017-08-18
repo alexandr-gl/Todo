@@ -5,6 +5,6 @@
 !foo.html
 # Ignore objects and archives.
 .idea/
-node_modules
+node_modules/
 
 
