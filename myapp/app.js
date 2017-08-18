@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var index = require('./routes/index');
 var users = require('./routes/users');
-var taskSchema = require('./routes/model')
+var taskSchema = require('./models/model')
 var app = express();
 
 // view engine setup

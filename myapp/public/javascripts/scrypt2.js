@@ -91,7 +91,7 @@ $(function () {
                 console.log('Error', error)
             }
         });
-
+        allOutput(0);
     }
 
     function add(newItem) {
@@ -145,9 +145,24 @@ $(function () {
         });
         $(`[id = ${_id}]`).detach();
         $('.adding-task-li').remove();
+        del(_id);
         reloadTList();
-    });
 
+    });
+    function del(delItem) {
+        $.ajax({
+            type: 'DELETE',
+            url: '/users',
+            success: function(result){
+                if (result.error) {
+                    alert(result.error);
+                }
+            },
+            error: function (error) {
+                console.log('Error', error)
+            }
+        });
+    }
     $('.task-list__tasks').on('click', '.adding-task-li', function () {
         let th = $(this);
         doneUndone(th);
@@ -247,7 +262,7 @@ $(function () {
         pageIndex++;
 
     }
-    
+    pagination();
     //вывод всех тасков функция
     function allOutput(pageIndexClick) {
         idRecount();
