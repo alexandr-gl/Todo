@@ -16,6 +16,7 @@ $(function () {
     let buttonIDtemp = 'alltasks';
     let pageIndexAllCheck = 0;
     let data;
+    let task;
 
     class Todo {
         constructor(id, text, state) {
@@ -33,9 +34,8 @@ $(function () {
         if ((/\S/.test(data) && data.length != 0)) {
             if(idx < 5) {
                 $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input type="checkbox" id="test${idx}"><label for="test${idx}"></label><span id="span${idx}">${data}</span><button class="btn del">Del</button></li>`);
-                let task = new Todo(idx, data, false);
+                task = new Todo(idx, data, false);
                 taskArray.push(task);
-                //taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
                 $("#input").val("");
                 idx++;
                 $('.adding-task-li').remove();
@@ -44,11 +44,11 @@ $(function () {
                     pagination();
                 }
                 $('#test').prop('checked', false);
-
                 add(task);
             }
             else {
-                taskArray.push(new Todo(idx, data, $('input[type = checkbox]').prop('checked')));
+                task = new Todo(idx, data, false);
+                taskArray.push(task);
                 $("#input").val("");
                 idx++;
                 $('.adding-task-li').remove();
@@ -57,8 +57,10 @@ $(function () {
                     pagination();
                 }
                 $('#test').prop('checked', false);
+                add(task);
             }
             counter();
+
         }
         else {alert("field is empty");}
     }
@@ -72,23 +74,35 @@ $(function () {
         $.ajax({
             type: 'GET',
             url: '/users',
-            success: function(){
-                alert('Tasks were got');
+            success: function(result){
+                if(result.error){
+                    alert(result.error);
+                }
+                else {
+                    taskArray = result;
+                    for(let i = 0; i<_.size(taskArray); i++)
+                    {
+                        delete taskArray[i]._id;
+                        delete taskArray[i].__v;
+                    }
+                }
             },
             error: function (error) {
                 console.log('Error', error)
             }
         });
+
     }
 
     function add(newItem) {
         $.ajax({
             type: 'POST',
-            //data: {data:object},
             data: newItem,
             url: '/users',
-            success: function(){
-                alert('Load was performed.');
+            success: function(result){
+                if (result.error) {
+                    alert(result.error);
+                }
             },
             error: function (error) {
                 console.log('Error', error)
@@ -279,6 +293,7 @@ $(function () {
                 $(`[id = test${taskArray[j].id}]`).prop('checked', true);
             }
         }
+        pagination2(buttonIDtemp);
     }
 
     function complOutput(pageIndexClick) {
@@ -356,15 +371,15 @@ $(function () {
     // вывод всех тасков
     $('#all').on('click', function () {
         $('.adding-task-li').remove();
-        buttonIDtemp = 'alltasks'
-        pagination2(buttonIDtemp);
+        buttonIDtemp = 'alltasks';
         allOutput(0);
+        //pagination2(buttonIDtemp);
     });
     // вывод завершенных тасков
     $('#completed').on('click', function () {
         $('.adding-task-li').remove();
         complOutput(0);
-        buttonIDtemp = 'compltasks'
+        buttonIDtemp = 'compltasks';
         pagination2(buttonIDtemp);
     });
 
@@ -372,7 +387,7 @@ $(function () {
     $('#active').on('click', function () {
         $('.adding-task-li').remove();
         activeOutput(0);
-        buttonIDtemp = 'acttasks'
+        buttonIDtemp = 'acttasks';
         pagination2(buttonIDtemp);
     });
 

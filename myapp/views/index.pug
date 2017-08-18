@@ -1,5 +1,32 @@
-extends layout
-
-block content
-  h1= title
-  p Welcome to #{title}
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title Todo
+    link(rel='stylesheet', href='stylesheets/style.css')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js')
+    script(src='javascripts/underscore.js')
+    script(src='javascripts/scrypt2.js')
+  body
+    header.header
+      h1.header_tittleh1  Todo
+    #content.content
+      .content__adding-task
+        input#test.unchecked(type='checkbox')
+        label(for='test') All
+        input#input.task-list__input(type='text', placeholder='What needs to be done')
+        button#add.btn Add
+      #content__list.content__list
+        ul#task-list.task-list__tasks
+      #pagingControls
+    footer.footer
+      #done
+        | Done  
+        span.done 0
+      #undone
+        | Undone  
+        span.undone 0
+      button#all.footer__button.btn All
+      button#active.footer__button.btn Active
+      button#completed.footer__button.btn Completed
+      button#delete.footer__button.btn Delete checked
