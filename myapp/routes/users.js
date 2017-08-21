@@ -23,14 +23,36 @@ router.post('/', function(req, res, next) {
     });
 });
 
-router.delete('/', function(req, res, next){
+router.delete('/:_id', function(req, res, next){
     var index = req.params._id;
+    console.log(index);
     modelTask.remove({_id: index}, function (err) {
         if (err){
             return res.status(500).send(err);
         }
         res.status(200).send(res.body)
-    })
-    //db.getCollection('newtasks').remove({id: 3});
+    });
 });
+
+// router.put('/:_id', function(req, res, next) {
+//     var check = req.body.state;
+//     var query = req.params._id;
+//     modelTask.update(query, {$set: {state: true}}, function (err, result) {
+//         if (err) {
+//             res.send({'error': 'An error has occurred'});
+//         }
+//
+//             res.status(200).send('result: ', result);
+//
+//     });
+// });
+router.put('/:_id', function (req, res) {
+    let query = {_id: req.params._id}
+    modelPost.update(query, {$set: {state: true}}, function (err, num) {
+        if (err) {
+            return res.status(500).send('Error!')
+        }
+        res.status(200).send('checked', num)
+    })
+})
 module.exports = router;

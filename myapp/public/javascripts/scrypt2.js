@@ -17,6 +17,7 @@ $(function () {
     let pageIndexAllCheck = 0;
     let data;
     let task;
+    let stateBD
 
     class Todo {
         constructor(id, text, state) {
@@ -33,7 +34,7 @@ $(function () {
         data = data.replace(/>/g, "&lt;");
         if ((/\S/.test(data) && data.length != 0)) {
             if(idx < 5) {
-                $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input type="checkbox" id="test${idx}"><label for="test${idx}"></label><span id="span${idx}">${data}</span><button class="btn del">Del</button></li>`);
+                $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input class="input-click" type="checkbox" id="test${idx}"><label for="test${idx}"></label><span id="span${idx}">${data}</span><button class="btn del">Del</button></li>`);
                 task = new Todo(idx, data, false);
                 taskArray.push(task);
                 $("#input").val("");
@@ -82,16 +83,18 @@ $(function () {
                     taskArray = result;
                     for(let i = 0; i<_.size(taskArray); i++)
                     {
-                        delete taskArray[i]._id;
+                        // delete taskArray[i]._id;
                         delete taskArray[i].__v;
+                        taskArray[i].id = taskArray[i]._id;
                     }
+                    allOutput(0);
+                    counter();
                 }
             },
             error: function (error) {
                 console.log('Error', error)
             }
         });
-        allOutput(0);
     }
 
     function add(newItem) {
@@ -103,6 +106,22 @@ $(function () {
                 if (result.error) {
                     alert(result.error);
                 }
+            },
+            error: function (error) {
+                console.log('Error', error)
+            }
+        });
+    }
+    function changeState(state1488, updState) {
+        $.ajax({
+            type: 'PUT',
+            data: {state: state1488},
+            url: '/users/' + updState,
+            success: function(result){
+                if (result.error) {
+                    alert(result.error);
+                }
+                console.log(result  )
             },
             error: function (error) {
                 console.log('Error', error)
@@ -152,7 +171,8 @@ $(function () {
     function del(delItem) {
         $.ajax({
             type: 'DELETE',
-            url: '/users',
+            //data: delItem,
+            url: '/users/' + delItem,
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -163,8 +183,8 @@ $(function () {
             }
         });
     }
-    $('.task-list__tasks').on('click', '.adding-task-li', function () {
-        let th = $(this);
+    $('.task-list__tasks').on('click', '.input-click', function () {
+        let th = $(this).parent().attr('id');
         doneUndone(th);
     });
 
@@ -194,11 +214,12 @@ $(function () {
         $('.done').replaceWith(`<span class="done">${length_checked}</span>`);
         $('.undone').replaceWith(`<span class="undone">${length_unchecked}</span>`);
     }
-    function doneUndone(th) {
-        _id = $(th).attr('id');
+    function doneUndone(_id) {
         for (const i of taskArray) {
             if (i.id == _id) {
                 i.state = $(`[id = test${_id}]`).prop("checked");
+                stateBD = i.state;
+            }
                 let s = 0;
                 for ( const i of taskArray) {
                    if (i.state == false) {
@@ -213,7 +234,7 @@ $(function () {
                     $('#test').prop('checked', true);
                 }
             }
-        }
+            changeState(stateBD, _id)
         counter();
     }
 
@@ -265,7 +286,7 @@ $(function () {
     pagination();
     //вывод всех тасков функция
     function allOutput(pageIndexClick) {
-        idRecount();
+        //idRecount();
         $('#test').prop('checked', false);
         let s = 0;
         for ( const i of taskArray) {
@@ -299,7 +320,7 @@ $(function () {
         }
         for (let j = pageIndex * 5; j < pageIndex * 5 + sizeOutput; j++) {
             $('#task-list').append(`<li class="adding-task-li" id="${taskArray[j].id}">
-                                        <input type="checkbox" id="test${taskArray[j].id}">
+                                        <input class="input-click" type="checkbox" id="test${taskArray[j].id}">
                                         <label for="test${taskArray[j].id}">
                                         </label>
                                         <span id="span${taskArray[j].id}">${taskArray[j].text}</span>
