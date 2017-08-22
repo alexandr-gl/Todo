@@ -23,36 +23,44 @@ router.post('/', function(req, res, next) {
     });
 });
 
-router.delete('/:_id', function(req, res, next){
-    var index = req.params._id;
-    console.log(index);
-    modelTask.remove({_id: index}, function (err) {
+router.delete('/delOne/:id', function(req, res, next){
+    var index = req.params.id;
+        modelTask.remove({_id: index}, function (err) {
+            if (err) {
+                return res.status(500).send(err);
+            }
+            res.status(200).send(res.body)
+        });
+});
+
+router.delete('/checked/', function(req, res, next){
+    modelTask.remove({state: true}, function(err){
         if (err){
             return res.status(500).send(err);
         }
-        res.status(200).send(res.body)
+        res.status(200).send(res.body);
     });
 });
 
-// router.put('/:_id', function(req, res, next) {
-//     var check = req.body.state;
-//     var query = req.params._id;
-//     modelTask.update(query, {$set: {state: true}}, function (err, result) {
-//         if (err) {
-//             res.send({'error': 'An error has occurred'});
-//         }
-//
-//             res.status(200).send('result: ', result);
-//
-//     });
-// });
 router.put('/:_id', function (req, res) {
-    let query = {_id: req.params._id}
-    modelPost.update(query, {$set: {state: true}}, function (err, num) {
+    var query = {_id: req.params._id};
+        modelTask.update(query, {$set: {state: req.body.state}}, function (err, num) {
+            if (err) {
+                return res.status(500).send('Error!')
+            }
+            res.status(200).send('checked', num)
+        })
+});
+
+router.put('/edit/:_id', function (req, res) {
+    var query = {_id: req.params._id};
+    modelTask.update(query, {$set: {text: req.body.text}}, function (err, num) {
         if (err) {
             return res.status(500).send('Error!')
         }
         res.status(200).send('checked', num)
     })
-})
+});
+
+
 module.exports = router;
