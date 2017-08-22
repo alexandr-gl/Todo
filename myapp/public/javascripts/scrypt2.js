@@ -66,12 +66,7 @@ $(function () {
         }
         else {alert("field is empty");}
     }
-    function idRecount() {
-        for(let i = 0; i<_.size(taskArray); i++)
-        {
-            taskArray[i].id = i;
-        }
-    }
+
     function get(add, idx){
         $.ajax({
             type: 'GET',
@@ -120,10 +115,10 @@ $(function () {
             }
         });
     }
-    function changeState(state1488, updState) {
+    function changeState(state1, updState) {
         $.ajax({
             type: 'PUT',
-            data: {state: state1488},
+            data: {state: state1},
             url: '/users/' + updState,
             success: function(result){
                 if (result.error) {
@@ -287,7 +282,6 @@ $(function () {
         doneUndone();
         reloadTList();
         counter();
-        idRecount();
     });
     // редактирование таска
     $('.task-list__tasks').on('dblclick', '.adding-task-li', function () {
@@ -332,7 +326,6 @@ $(function () {
     pagination();
     //вывод всех тасков функция
     function allOutput(pageIndexClick) {
-        //idRecount();
         $('#test').prop('checked', false);
         let s = 0;
         for ( const i of taskArray) {
@@ -379,7 +372,6 @@ $(function () {
     }
 
     function complOutput(pageIndexClick) {
-        idRecount();
         taskArrayCompl = _.reject(taskArray, function (i) {
             return i.state == false
         });
@@ -415,7 +407,6 @@ $(function () {
     }
 
     function activeOutput(pageIndexClick) {
-        idRecount();
         taskArrayActive = _.filter(taskArray, function (i) {
             return i.state == false
         });
@@ -455,7 +446,7 @@ $(function () {
         $('.adding-task-li').remove();
         buttonIDtemp = 'alltasks';
         allOutput(0);
-        //pagination2(buttonIDtemp);
+        pagination2(buttonIDtemp);
     });
     // вывод завершенных тасков
     $('#completed').on('click', function () {

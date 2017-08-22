@@ -56,17 +56,3 @@ module.exports = app;
 var MongoClient = require('mongodb').MongoClient
     , assert = require('assert');
 
-// var task = new taskSchema({
-//    id: 10, text: 'b', state: false
-// });
-//
-// task.save(function (err, task, affected) {
-//     if(err) throw err
-//         taskSchema.findOne({text: 'b'}, function(err, tester){
-//         console.log(tester);
-//         })
-// });
-//
-// var collection = db.collection('newtasks');
-//
-// var s = collection.find([]);
