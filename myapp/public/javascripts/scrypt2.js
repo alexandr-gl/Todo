@@ -70,7 +70,7 @@ $(function () {
     function get(add, idx){
         $.ajax({
             type: 'GET',
-            url: '/users',
+            url: '/tasks',
             success: function(result){
                 if(result.error){
                     alert(result.error);
@@ -104,7 +104,7 @@ $(function () {
         $.ajax({
             type: 'POST',
             data: newItem,
-            url: '/users',
+            url: '/tasks',
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -119,7 +119,7 @@ $(function () {
         $.ajax({
             type: 'PUT',
             data: {state: state1},
-            url: '/users/' + updState,
+            url: '/tasks/' + updState,
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -135,7 +135,7 @@ $(function () {
     {
         $.ajax({
             type: 'DELETE',
-            url: '/users/checked/',
+            url: '/tasks/checked/',
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -150,7 +150,7 @@ $(function () {
         $.ajax({
             type: 'PUT',
             data: {text: data},
-            url: '/users/edit/' + updText,
+            url: '/tasks/edit/' + updText,
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -205,7 +205,7 @@ $(function () {
         $.ajax({
             type: 'DELETE',
             //data: delItem,
-            url: '/users/delOne/' + delItem,
+            url: '/tasks/delOne/' + delItem,
             success: function(result){
                 if (result.error) {
                     alert(result.error);
