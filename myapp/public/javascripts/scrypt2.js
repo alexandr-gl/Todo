@@ -1,6 +1,6 @@
 $(function () {
     let id, tittle, state;
-    let idx = 0;
+    let idx;
     let _id;
 
     let taskArray = [];
@@ -28,6 +28,7 @@ $(function () {
     }
     get('load', 0);
     function addTasks() {
+        idx = _.size(taskArray);
         let size = _.size(taskArray);
         data = $("#input").val();
         data = data.replace(/</g, "&lt;");
@@ -88,7 +89,7 @@ $(function () {
                         allOutput(0);
                         counter();
                     }
-                    else if(add == 'enter')
+                    else if(add == 'enter' && idx < 5)
                     {
                         $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input class="input-click" type="checkbox" id="test${taskArray[idx].id}"><label for="test${taskArray[idx].id}"></label><span id="span${taskArray[idx].id}">${taskArray[idx].text}</span><button class="btn del">Del</button></li>`);
                     }
@@ -164,17 +165,17 @@ $(function () {
     function reloadTList() {
         if(buttonIDtemp == 'alltasks')
         {
-            allOutput(0);
+            allOutput(idxx);
             pagination2('alltasks');
         }
         else if(buttonIDtemp == 'compltask')
         {
-            complOutput(0);
+            complOutput(idxx);
             pagination2('compltask');
         }
         else if (buttonIDtemp == 'acttasks')
         {
-            activeOutput(0);
+            activeOutput(idxx);
             pagination2('acttasks');
         }
     }
