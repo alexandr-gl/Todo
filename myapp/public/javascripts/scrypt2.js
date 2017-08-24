@@ -1,6 +1,6 @@
 $(function () {
     let id, tittle, state;
-    let idx;
+    let idx = 0;
     let _id;
     let idxx = 0;
     let taskArray = [];
@@ -28,39 +28,41 @@ $(function () {
     }
     get('load', 0);
     function addTasks() {
-        idx = _.size(taskArray);
-        let size = _.size(taskArray);
         data = $("#input").val();
         data = data.replace(/</g, "&lt;");
         data = data.replace(/>/g, "&lt;");
         if ((/\S/.test(data) && data.length != 0)) {
-            if(idx < 5) {
+            if(idx < 4) {
                 //$('#task-list').append(`<li class="adding-task-li" id="${idx}"><input class="input-click" type="checkbox" id="test${idx}"><label for="test${idx}"></label><span id="span${idx}">${data}</span><button class="btn del">Del</button></li>`);
                 task = new Todo(idx, data, false);
                 taskArray.push(task);
+                idx = _.size(taskArray) - 1;
                 add(task);
                 get('enter', idx);
+                $('.adding-task-li').remove();
+                allOutput(idxx);
                 $("#input").val("");
-                idx++;
-                //$('.adding-task-li').remove();
-                //reloadTList();
-                if (idx % 5 == 1) {
-                    pagination();
+                if (idx % 5 == 0) {
+                    pagination2('alltasks');
                 }
                 $('#test').prop('checked', false);
             }
             else {
                 task = new Todo(idx, data, false);
                 taskArray.push(task);
+                idx = _.size(taskArray) - 1;
+                idxx = Math.trunc(idx/5);
                 $("#input").val("");
-                idx++;
-                $('.adding-task-li').remove();
-                reloadTList();
-                if (idx % 5 == 1) {
-                    pagination();
+                //reloadTList();
+                if (idx % 5 == 0) {
+                    pagination2('alltasks');
+                    $('.adding-task-li').remove();
                 }
                 $('#test').prop('checked', false);
                 add(task);
+                get('enter', idx);
+                $('.adding-task-li').remove();
+                allOutput(idxx);
             }
             counter();
 
@@ -89,10 +91,10 @@ $(function () {
                         allOutput(0);
                         counter();
                     }
-                    else if(add == 'enter' && idx < 5)
-                    {
-                        $('#task-list').append(`<li class="adding-task-li" id="${idx}"><input class="input-click" type="checkbox" id="test${taskArray[idx].id}"><label for="test${taskArray[idx].id}"></label><span id="span${taskArray[idx].id}">${taskArray[idx].text}</span><button class="btn del">Del</button></li>`);
-                    }
+                    // else if(add == 'enter')
+                    // {
+                    //     //$('#task-list').append(`<li class="adding-task-li" id="${taskArray[idx].id}"><input class="input-click" type="checkbox" id="test${taskArray[idx].id}"><label for="test${taskArray[idx].id}"></label><span id="span${taskArray[idx].id}">${taskArray[idx].text}</span><button class="btn del">Del</button></li>`);
+                    // }
                 }
             },
             error: function (error) {
@@ -215,6 +217,10 @@ $(function () {
         $(`[id = ${_id}]`).detach();
         $('.adding-task-li').remove();
         del(_id);
+        if(_.size(taskArray)%5 == 0 && idxx != 0)
+        {
+            allOutput(idxx - 1);
+        }
         reloadTList();
 
     });
@@ -297,9 +303,15 @@ $(function () {
             return i.state == false
         });
         $("#test").prop("checked", false);
-        delCheckedDB ();
+        delCheckedDB();
         doneUndone();
-        reloadTList();
+        if(_.size(taskArray)%5 == 0 && idxx != 0)
+        {
+            allOutput(idxx - 1);
+        }
+        if(_.size(taskArray)%5 != 0) {
+            reloadTList();
+        }
         counter();
     });
     // редактирование таска
