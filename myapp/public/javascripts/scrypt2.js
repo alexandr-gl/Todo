@@ -2,7 +2,7 @@ $(function () {
     let id, tittle, state;
     let idx;
     let _id;
-
+    let idxx = 0;
     let taskArray = [];
     let taskArrayActive = [];
     let taskArrayCompl = [];
@@ -132,6 +132,22 @@ $(function () {
             }
         });
     }
+    function changeStateAll(stateAll) {
+        $.ajax({
+            type: 'PUT',
+            data: {state: stateAll},
+            url: '/tasks',
+            success: function(result){
+                if (result.error) {
+                    alert(result.error);
+                }
+                console.log(result);
+            },
+            error: function (error) {
+                console.log('Error', error);
+            }
+        });
+    }
     function delCheckedDB ()
     {
         $.ajax({
@@ -231,6 +247,7 @@ $(function () {
             for (const i of taskArray) {
                 i.state = true;
             }
+            changeStateAll(true);
             counter();
         }
         else if ($('#test').attr('class') == 'checked') {
@@ -240,6 +257,7 @@ $(function () {
             for (const i of taskArray) {
                 i.state = false;
             }
+            changeStateAll(false);
             counter();
         }
     });
