@@ -1,5 +1,4 @@
 $(function () {
-    let id, tittle, state;
     let idx = 0;
     let _id;
     let idxx = 0;
@@ -83,10 +82,6 @@ $(function () {
                     }
                     allOutput(idxx);
                     counter();
-                    // else if(add == 'enter')
-                    // {
-                    //     //$('#task-list').append(`<li class="adding-task-li" id="${taskArray[idx].id}"><input class="input-click" type="checkbox" id="test${taskArray[idx].id}"><label for="test${taskArray[idx].id}"></label><span id="span${taskArray[idx].id}">${taskArray[idx].text}</span><button class="btn del">Del</button></li>`);
-                    // }
                 }
             },
             error: function (error) {
@@ -110,10 +105,10 @@ $(function () {
             }
         });
     }
-    function changeState(state1, updState) {
+    function changeState(state1, updState, text) {
         $.ajax({
             type: 'PUT',
-            data: {state: state1},
+            data: {state: state1, text: text},
             url: '/tasks/' + updState,
             success: function(result){
                 if (result.error) {
@@ -130,7 +125,7 @@ $(function () {
         $.ajax({
             type: 'PUT',
             data: {state: stateAll},
-            url: '/tasks',
+            url: '/tasks/checkAll',
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -146,7 +141,7 @@ $(function () {
     {
         $.ajax({
             type: 'DELETE',
-            url: '/tasks/checked/',
+            url: '/tasks',
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -157,21 +152,7 @@ $(function () {
             }
         });
     }
-    function editText (updText, data){
-        $.ajax({
-            type: 'PUT',
-            data: {text: data},
-            url: '/tasks/edit/' + updText,
-            success: function(result){
-                if (result.error) {
-                    alert(result.error);
-                }
-            },
-            error: function (error) {
-                console.log('Error', error);
-            }
-        });
-    }
+
     function reloadTList() {
         if(buttonIDtemp == 'alltasks')
         {
@@ -220,7 +201,7 @@ $(function () {
         $.ajax({
             type: 'DELETE',
             //data: delItem,
-            url: '/tasks/delOne/' + delItem,
+            url: '/tasks/' + delItem,
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -233,8 +214,10 @@ $(function () {
     }
     $('.task-list__tasks').on('click', '.input-click', function () {
         let th = $(this).parent().attr('id');
+        let text = _.filter(taskArray, {id: th});
         doneUndone(th);
-        changeState(stateBD, th);
+        console.log(text[0].text);
+        changeState(stateBD, th, text[0].text);
     });
 
     $('#test').on('click', function () {
@@ -330,7 +313,9 @@ $(function () {
                             let edit = data;
                             $(`[id = span${_id}]`).replaceWith(`<span id="span${_id}">${data}</span>`);
                             i.text = data;
-                            editText(_id, data);
+                            let qqz = 'test' + _id;
+                            let qqz1 = $(`#${qqz}`).prop('checked');
+                            changeState(qqz1, _id, data);
                             $('#edit').remove();
                         }
                         else {alert("Field is empty");}
@@ -363,6 +348,8 @@ $(function () {
         else if(s==0 && _.size(taskArray) != 0)
         {
             $('#test').prop('checked', true);
+            $('#test').addClass("checked");
+            $('#test').removeClass("unchecked");
         }
         if(pageIndexClick == undefined) {
             pageIndex = 0;
