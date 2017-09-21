@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
 router.delete('/:id', function(req, res, next){
         modelTask.remove({_id: req.params.id}, function (err) {
             if (err) {
-                return res.status(500).send(err);
+                return res.send({error: 'Task not deleted'});
             }
             res.status(200).send();
         });
@@ -34,29 +34,29 @@ router.delete('/:id', function(req, res, next){
 router.delete('/', function(req, res, next){
     modelTask.remove({state: true}, function(err){
         if (err){
-            return res.status(500).send(err);
+            return res.send({error: 'Tasks not deleted'});;
         }
         res.status(200).send(res.body);
     });
 });
 
-router.put('/checkAll', function (req, res) {
+router.put('/put', function (req, res) {
     req.body.state = JSON.parse(req.body.state);
     modelTask.update({state: !req.body.state}, {$set: {state: req.body.state}}, {multi:true}, function (err, num) {
             if (err) {
-                return res.status(500).send('Error!')
+                return res.send({error: 'Tasks not updated'});
             }
-            res.status(200).send('checked', num)
+            res.status(200).send('checked', num);
         });
 });
 
 router.put('/:id', function (req, res) {
     modelTask.update({_id: req.params.id}, {$set: {state: req.body.state, text: req.body.text}}, function (err, num) {
             if (err) {
-                return res.status(500).send('Error!')
+                return res.send({error: 'Task not update'});
             }
-            res.status(200).send('checked', num)
-        })
+            res.status(200).send('checked', num);
+        });
 });
 
 module.exports = router;

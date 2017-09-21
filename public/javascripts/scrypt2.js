@@ -5,67 +5,20 @@ $(function () {
     let taskArray = [];
     let taskArrayActive = [];
     let taskArrayCompl = [];
-    let numPages;
-    let numTasksOnPage = 5;
     let pageIndex = 0;
-    let page, pageIndexTemp;
-    let buttonid;
-    let buttonclass;
     let sizeOutput;
     let buttonIDtemp = 'alltasks';
-    let pageIndexAllCheck = 0;
     let data;
     let task;
     let stateBD;
+    let input = $('#input');
+    let task_list = $('#task-list');
+    let taskInput = $('#taskInput');
+    let pagingControls = $('#pagingControls');
+    let tasklist_task = $('.task-list__tasks');
 
-    class Todo {
-        constructor(id, text, state) {
-            this.id = id;
-            this.text = text;
-            this.state = state;
-        }
-    }
-    get('load', 0);
-    function addTasks() {
-        data = $("#input").val();
-        data = data.replace(/</g, "&lt;");
-        data = data.replace(/>/g, "&lt;");
-        if ((/\S/.test(data) && data.length != 0)) {
-            if(idx < 4) {
-                task = new Todo(idx, data, false);
-                taskArray.push(task);
-                idx = _.size(taskArray) - 1;
-                add(task);
-                get('enter', idx);
-                $('.adding-task-li').remove();
-                $("#input").val("");
-                if (idx % 5 == 0) {
-                    pagination2('alltasks');
-                }
-                $('#test').prop('checked', false);
-            }
-            else {
-                task = new Todo(idx, data, false);
-                taskArray.push(task);
-                idx = _.size(taskArray) - 1;
-                idxx = Math.trunc(idx/5);
-                $("#input").val("");
-                if (idx % 5 == 0) {
-                    pagination2('alltasks');
-                    $('.adding-task-li').remove();
-                }
-                $('#test').prop('checked', false);
-                add(task);
-                get('enter', idx);
-                $('.adding-task-li').remove();
-            }
-            counter();
 
-        }
-        else {alert("field is empty");}
-    }
-
-    function get(add, idx){
+    function get(){
         $.ajax({
             type: 'GET',
             url: '/tasks',
@@ -75,17 +28,13 @@ $(function () {
                 }
                 else {
                     taskArray = result;
-                    for(let i = 0; i<_.size(taskArray); i++)
-                    {
-                        delete taskArray[i].__v;
-                        taskArray[i].id = taskArray[i]._id;
-                    }
+                    pagination2('alltasks', taskArray);
                     allOutput(idxx);
                     counter();
                 }
             },
             error: function (error) {
-                console.log('Error', error)
+                alert(error);
             }
         });
     }
@@ -101,7 +50,7 @@ $(function () {
                 }
             },
             error: function (error) {
-                console.log('Error', error)
+                alert(error);
             }
         });
     }
@@ -117,7 +66,7 @@ $(function () {
                 console.log(result);
             },
             error: function (error) {
-                console.log('Error', error);
+                alert(error);
             }
         });
     }
@@ -125,7 +74,7 @@ $(function () {
         $.ajax({
             type: 'PUT',
             data: {state: stateAll},
-            url: '/tasks/checkAll',
+            url: '/tasks/put',
             success: function(result){
                 if (result.error) {
                     alert(result.error);
@@ -133,7 +82,7 @@ $(function () {
                 console.log(result);
             },
             error: function (error) {
-                console.log('Error', error);
+                alert(error);
             }
         });
     }
@@ -148,59 +97,14 @@ $(function () {
                 }
             },
             error: function (error) {
-                console.log('Error', error);
+                alert(error);
             }
         });
     }
 
-    function reloadTList() {
-        if(buttonIDtemp == 'alltasks')
-        {
-            allOutput(idxx);
-            pagination2('alltasks');
-        }
-        else if(buttonIDtemp == 'compltask')
-        {
-            complOutput(idxx);
-            pagination2('compltask');
-        }
-        else if (buttonIDtemp == 'acttasks')
-        {
-            activeOutput(idxx);
-            pagination2('acttasks');
-        }
-    }
-    //добавление таска по кнопке
-    $('#add').on('click', function () {
-        addTasks();
-    });
-    //добавление таска по enter
-    $('#input').keydown(function (eventObject) {
-        if (eventObject.which == 13) {
-            addTasks();
-        }
-    });
-
-    // удаление одного таска
-    $('.task-list__tasks').on('click', '.btn', function () {
-        _id = $(this).parent().attr('id');
-        taskArray = _.reject(taskArray, function (i) {
-            return i.id == _id
-        });
-        $(`[id = ${_id}]`).detach();
-        $('.adding-task-li').remove();
-        del(_id);
-        if(_.size(taskArray)%5 == 0 && idxx != 0)
-        {
-            allOutput(idxx - 1);
-        }
-        counter();
-        reloadTList();
-    });
     function del(delItem) {
         $.ajax({
             type: 'DELETE',
-            //data: delItem,
             url: '/tasks/' + delItem,
             success: function(result){
                 if (result.error) {
@@ -208,323 +112,290 @@ $(function () {
                 }
             },
             error: function (error) {
-                console.log('Error', error)
+                alert(error);
             }
         });
     }
-    $('.task-list__tasks').on('click', '.input-click', function () {
-        let th = $(this).parent().attr('id');
-        let text = _.filter(taskArray, {id: th});
-        doneUndone(th);
-        console.log(text[0].text);
-        changeState(stateBD, th, text[0].text);
+
+
+
+    class Todo {
+        constructor(id, text, state) {
+            this.id = id;
+            this.text = text;
+            this.state = state;
+        }
+    }
+    get();
+    function addTasks() {
+        data = input.val();
+        data = data.replace(/</g, "&lt;");
+        data = data.replace(/>/g, "&lt;");
+        if (!(/\S/.test(data) && data.length !== 0)) {
+            alert("field is empty");
+        }
+        else {
+            input.val("");
+            task = new Todo(idx, data, false);
+            taskArray.push(task);
+            idx = taskArray.length - 1;
+            add(task);
+            get();
+            idxx = Math.trunc(idx / 5);
+            let adding_task_lili = $('.adding-task-li');
+            adding_task_lili.remove();
+            reloadTList();
+            taskInput.prop('checked', false);
+            counter();
+        }
+    }
+
+    function findChecked() {
+        taskInput.prop('checked', false);
+        let task = _.findWhere(taskArray, {state: false});
+        let condition;
+        condition = task === undefined;
+        taskInput.prop('checked', condition);
+    }
+    function idRecount() {
+        for(let i = 0; i<taskArray.length; i++)
+        {
+            taskArray[i].id = i;
+        }
+    }
+    function reloadTList() {
+        if(buttonIDtemp === 'alltasks')
+        {
+            allOutput(idxx);
+            pagination2('alltasks', taskArray);
+        }
+        else if(buttonIDtemp === 'compltask')
+        {
+            complOutput(idxx);
+            pagination2('compltask', taskArrayCompl);
+        }
+        else if (buttonIDtemp === 'acttasks')
+        {
+            activeOutput(idxx);
+            pagination2('acttasks', taskArrayActive);
+        }
+    }
+    //добавление таска по кнопке
+    $('#add').on('click', function () {
+        addTasks();
+    });
+    //добавление таска по enter
+    input.keydown(function (eventObject) {
+        if (eventObject.which === 13) {
+            addTasks();
+        }
     });
 
-    $('#test').on('click', function () {
-        if ($('#test').attr('class') == 'unchecked') {
-            $("input").prop("checked", true);
-            $('#test').addClass("checked");
-            $('#test').removeClass("unchecked");
-            for (const i of taskArray) {
-                i.state = true;
-            }
-            changeStateAll(true);
-            counter();
-        }
-        else if ($('#test').attr('class') == 'checked') {
-            $("input").prop("checked", false);
-            $('#test').addClass("unchecked");
-            $('#test').removeClass("checked");
-            for (const i of taskArray) {
-                i.state = false;
-            }
-            changeStateAll(false);
-            counter();
-        }
+    // удаление одного таска
+    tasklist_task.on('click', '.btn', function () {
+        _id = $(this).parent().attr('id');
+        taskArray = _.reject(taskArray, function (i) {
+            return i.id === parseInt(_id);
+        });
+        $(`[id = ${_id}]`).detach();
+        remAddingTaskLi();
+        reloadTList();
     });
+
+    tasklist_task.on('click', '.input-click', function () {
+        let th = $(this).parent().attr('id');
+        console.log('taskArray[th].id-- ', taskArray[th].id);
+        doneUndone(th);
+        changeState(stateBD, taskArray[th]._id, taskArray[th].text);
+    });
+
+    //изменение состояния всех тасков
+    taskInput.on('click', function () {
+        const condition = taskInput.attr('class') === 'unchecked';
+        $("input").prop("checked", condition);
+        taskInput.toggleClass("checked unchecked");
+        for (const i of taskArray) {
+            i.state = condition;
+        }
+        changeStateAll(condition);
+        counter();
+    });
+
     function counter() {
-        let length_checked = _.size(_.filter(taskArray, function (i) { return i.state == true }));
-        let length_unchecked = _.size(taskArray) - _.size(_.filter(taskArray, function (i) { return i.state == true }));
+        const length_checked = _.filter(taskArray, function (i) { return i.state === true; }).length;
+        const length_unchecked = taskArray.length - length_checked;
         $('.done').replaceWith(`<span class="done">${length_checked}</span>`);
         $('.undone').replaceWith(`<span class="undone">${length_unchecked}</span>`);
     }
-    function doneUndone(_id) {
-        for (const i of taskArray) {
-            if (i.id == _id) {
-                i.state = $(`[id = test${_id}]`).prop("checked");
-                stateBD = i.state;
-            }
-                let s = 0;
-                for ( const i of taskArray) {
-                   if (i.state == false) {
-                       s++;
-                   }
-                }
-                if (s > 0) {
-                    $('#test').prop('checked', false);
-                }
-                else
-                {
-                    $('#test').prop('checked', true);
-                }
-            }
+    function doneUndone(th) {
+        taskArray[th].state = $(`[id = taskInput${th}]`).prop("checked");
+        stateBD = taskArray[th].state;
+        findChecked();
         counter();
     }
 
     // удаление отмеченных галочкой тасков
     $('#delete').on('click', function () {
-        $('.adding-task-li').remove();
+        remAddingTaskLi();
         taskArray = _.filter(taskArray, function (i) {
-            return i.state == false
+            return i.state === false;
         });
-        $("#test").prop("checked", false);
+        $("#taskInput").prop("checked", false);
         delCheckedDB();
-        if(_.size(taskArray)%5 == 0 && idxx != 0)
-        {
-            allOutput(idxx - 1);
-        }
-        if(_.size(taskArray)%5 != 0) {
-            reloadTList();
-        }
-        pagination2();
-        doneUndone();
+        reloadTList();
         counter();
+        idRecount();
     });
     // редактирование таска
-    $('.task-list__tasks').on('dblclick', '.adding-task-li', function () {
-        $('#edit').remove();
-        $('#edit').focus();
+    tasklist_task.on('dblclick', '.adding-task-li', function () {
+        $('.edit').detach();
         _id = $(this).attr('id');
         $(`[id = span${_id}]`).append(`<textarea  class="edit" type="text" id="edit" />`);
-        for (const i of taskArray)
-        {
-            if(i.id==_id)
-            {
-                $('#edit').val(i.text);
-                $('#edit').on('focusout', function () {
-                    $('#edit').remove();
-                });
-                $('#edit').keydown(function (eventObject) {
-                    if (eventObject.which == 13) {
-                        data = $("#edit").val();
-                        data = data.replace(/</g, "&lt;");
-                        data = data.replace(/>/g, "&lt;");
-                        if ((/\S/.test(data) && data.length !== 0)) {
-                            let edit = data;
-                            $(`[id = span${_id}]`).replaceWith(`<span id="span${_id}">${data}</span>`);
-                            i.text = data;
-                            let qqz = 'test' + _id;
-                            let qqz1 = $(`#${qqz}`).prop('checked');
-                            changeState(qqz1, _id, data);
-                            $('#edit').remove();
-                        }
-                        else {alert("Field is empty");}
-                    }
-                });
+        let edit = $('#edit');
+        edit.focus();
+        let val = `${taskArray[_id].text}`;
+        edit.val(val);
+        edit.keydown(function (eventObject) {
+            if (eventObject.which === 13) {
+                data = edit.val();
+                data = data.replace(/</g, "&lt;");
+                data = data.replace(/>/g, "&lt;");
+                if ((/\S/.test(data) && data.length !== 0)) {
+                    $(`[id = span${_id}]`).replaceWith(`<span id="span${_id}">${data}</span>`);
+                    taskArray[_id].text = data;
+                    changeState(taskArray[_id].state, taskArray[_id]._id, taskArray[_id].text);
+                    edit.remove();
+                }
+                else {alert("Field is empty");}
             }
-        }
+        });
+        edit.on('focusout', function () {
+            edit.detach();
+        });
     });
 
+    function arrayAppend(selectArray) {
+        remAddingTaskLi();
+        let sArray;
+        switch(selectArray) {
+            case 'all': sArray = taskArray; break;
+            case 'compl': sArray = taskArrayCompl; break;
+            case 'act': sArray = taskArrayActive; break;
+            default: sArray = taskArray;
+        }
+        sArray = sArray.slice(pageIndex*5, pageIndex*5+sizeOutput);
+        sArray.forEach(function(element, index, sArray){
 
-    // пагинация
-    function pagination() {
-        $('#pagingControls').append(`<ul class="pagingControlsList" id="pagingControlsList"></ul>`);
-        pageIndex++;
-
-    }
-    pagination();
-    //вывод всех тасков функция
-    function allOutput(pageIndexClick) {
-        $('#test').prop('checked', false);
-        let s = 0;
-        for ( const i of taskArray) {
-            if (i.state == false) {
-                s++;
+            task_list.append(`<li class="adding-task-li" id="${sArray[index].id}">
+                                        <input class="input-click" type="checkbox" id="taskInput${sArray[index].id}">
+                                        <label for="taskInput${sArray[index].id}">
+                                        </label>
+                                        <span id="span${sArray[index].id}">${sArray[index].text}</span>
+                                        <button class="btn del">Del</button></li>`);
+            if (sArray[index].state === true) {
+                $(`[id = taskInput${sArray[index].id}]`).prop('checked', true);
             }
-        }
-        if (s > 0) {
-            $('#test').prop('checked', false);
-        }
-        else if(s==0 && _.size(taskArray) != 0)
-        {
-            $('#test').prop('checked', true);
-            $('#test').addClass("checked");
-            $('#test').removeClass("unchecked");
-        }
-        if(pageIndexClick == undefined) {
-            pageIndex = 0;
-        }
-        else if (pageIndexClick != undefined)
-        {
-            pageIndex = pageIndexClick;
-        }
-        let x = _.size(taskArray)/5;
+
+        });
+    }
+
+    function output(pageIndexClick, Array) {
+        pageIndex = pageIndexClick === undefined ? 0 : pageIndexClick;
+        let x = Array.length/5;
         x = Math.trunc(x);
-        if (pageIndexClick == undefined || pageIndexClick == x)
+        if (pageIndexClick === undefined || pageIndexClick === x)
         {
-            sizeOutput = _.size(taskArray) % 5;
+            sizeOutput = Array.length % 5;
         }
         else
         {
             sizeOutput = 5;
         }
-        for (let j = pageIndex * 5; j < pageIndex * 5 + sizeOutput; j++) {
-            $('#task-list').append(`<li class="adding-task-li" id="${taskArray[j].id}">
-                                        <input class="input-click" type="checkbox" id="test${taskArray[j].id}">
-                                        <label for="test${taskArray[j].id}">
-                                        </label>
-                                        <span id="span${taskArray[j].id}">${taskArray[j].text}</span>
-                                        <button class="btn del">Del</button></li>`);
-            if (taskArray[j].state == true) {
-                $(`[id = test${taskArray[j].id}]`).prop('checked', true);
-            }
-        }
-        pagination2(buttonIDtemp);
+    }
+
+    //вывод всех тасков функция
+    function allOutput(pageIndexClick) {
+        idRecount();
+        findChecked();
+        output(pageIndexClick, taskArray);
+        arrayAppend('all');
     }
 
     function complOutput(pageIndexClick) {
-        $('#test').addClass("checked");
-        $('#test').removeClass("unchecked");
+        idRecount();
         taskArrayCompl = _.reject(taskArray, function (i) {
-            return i.state == false
+            return i.state === false;
         });
-        if(pageIndexClick == undefined) {
-            pageIndex = 0;
-        }
-        else if (pageIndexClick != undefined)
-        {
-            pageIndex = pageIndexClick;
-        }
-        let x = _.size(taskArrayCompl)/5;
-        x = Math.trunc(x);
-        if (pageIndexClick == undefined || pageIndexClick == x)
-        {
-            sizeOutput = _.size(taskArrayCompl) % 5;
-        }
-        else
-        {
-            sizeOutput = 5;
-        }
-        for (let j = pageIndex * 5; j < pageIndex * 5 + sizeOutput; j++) {
-            $('#task-list').append(`<li class="adding-task-li" id="${taskArrayCompl[j].id}">
-                                        <input class="input-click" type="checkbox" id="test${taskArrayCompl[j].id}">
-                                        <label for="test${taskArrayCompl[j].id}">                                        
-                                        </label>
-                                        <span id="span${taskArrayCompl[j].id}">${taskArrayCompl[j].text}</span>
-                                        <button class="btn del">Del</button></li>`);
-            if (taskArrayCompl[j].state == true) {
-                $(`[id = test${taskArrayCompl[j].id}]`).prop('checked', true);
-            }
-        }
-        $('#test').prop('checked', true);
+        output(pageIndexClick, taskArrayCompl);
+        arrayAppend('compl');
+        taskInput.prop('checked', true);
     }
 
     function activeOutput(pageIndexClick) {
-        $('#test').addClass("unchecked");
-        $('#test').removeClass("checked");
+        idRecount();
         taskArrayActive = _.filter(taskArray, function (i) {
-            return i.state == false
+            return i.state === false;
         });
-        if(pageIndexClick == undefined) {
-            pageIndex = 0;
-        }
-        else if (pageIndexClick != undefined)
-        {
-            pageIndex = pageIndexClick;
-        }
-        let x = _.size(taskArrayActive)/5;
-        x = Math.trunc(x);
-        if (pageIndexClick == undefined || pageIndexClick == x)
-        {
-            sizeOutput = _.size(taskArrayActive) % 5;
-        }
-        else
-        {
-            sizeOutput = 5;
-        }
-        for (let j = pageIndex * 5; j < pageIndex * 5 + sizeOutput; j++) {
-            $('#task-list').append(`<li class="adding-task-li" id="${taskArrayActive[j].id}">
-                                        <input class="input-click" type="checkbox" id="test${taskArrayActive[j].id}">
-                                        <label for="test${taskArrayActive[j].id}">
-                                        </label>
-                                        <span id="span${taskArrayActive[j].id}">${taskArrayActive[j].text}</span>
-                                        <button class="btn del">Del</button></li>`);
-            if (taskArrayActive[j].state == true) {
-                $(`[id = test${taskArrayActive[j].id}]`).prop('checked', true);
-            }
-        }
-        $('#test').prop('checked', false);
+        output(pageIndexClick, taskArrayActive);
+        arrayAppend('act');
+        taskInput.prop('checked', false);
     }
 
     // вывод всех тасков
     $('#all').on('click', function () {
-        $('.adding-task-li').remove();
-        buttonIDtemp = 'alltasks';
         allOutput(0);
-        pagination2(buttonIDtemp);
+        pagination2('alltasks', taskArray);
     });
     // вывод завершенных тасков
     $('#completed').on('click', function () {
-        $('.adding-task-li').remove();
         complOutput(0);
-        buttonIDtemp = 'compltasks';
-        pagination2(buttonIDtemp);
+        pagination2('compltasks', taskArrayCompl);
     });
 
     // вывод активных тасков
     $('#active').on('click', function () {
-        $('.adding-task-li').remove();
         activeOutput(0);
-        buttonIDtemp = 'acttasks';
-        pagination2(buttonIDtemp);
+        pagination2('acttasks', taskArrayActive);
     });
 
     //пагинация для отображения тасков отдельно
-    function pagination2(buttonid){
+    function pagination2(buttonid, array){
         pageIndex = 0;
         $('.pageIndex').remove();
-        if (buttonid == 'alltasks') {
-            for (let j = 0; j<_.size(taskArray)/5; j++) {
-                $('#pagingControlsList').append(`<li class="pageIndex" id="pageIndex${pageIndex}"><button class="btnpage alltasks btn">${pageIndex + 1}</button></li>`);
-                pageIndex++;
-            }
+        let pages = `<li class="pageIndex" id="pageIndex${pageIndex}"><button value="${pageIndex}" class="${buttonid} btnpage btn">${pageIndex + 1}</button></li>`;
+        for(let i=1; i<array.length/5; i++)
+        {
+            pageIndex = i;
+            pages += `<li class="pageIndex" id="pageIndex${pageIndex}"><button value="${pageIndex}" class="${buttonid} btnpage btn">${pageIndex + 1}</button></li>`;
         }
-        else if (buttonid == 'compltasks') {
-            for (let j = 0; j<_.size(taskArrayCompl)/5; j++) {
-                $('#pagingControlsList').append(`<li class="pageIndex" id="pageIndex${pageIndex}"><button class="btnpage compltasks btn">${pageIndex + 1}</button></li>`);
-                pageIndex++;
-            }
-        }
-        else if (buttonid == 'acttasks') {
-            for (let j = 0; j<_.size(taskArrayActive)/5; j++) {
-                $('#pagingControlsList').append(`<li class="pageIndex" id="pageIndex${pageIndex}"><button class="btnpage acttasks btn">${pageIndex + 1}</button></li>`);
-                pageIndex++;
-            }
-        }
+        $('.pagingControlsList').html(pages);
     }
-    
-    $('#pagingControls').on('click', '.alltasks', function () {
-        idxx = $(this).parent().attr('id');
-        idxx = idxx.replace(/pageIndex/g, "");
-        pageIndexAllCheck = idxx;
-        $('.adding-task-li').remove();
+
+    function forPagingControls(value) {
+        idxx = value;
+        remAddingTaskLi();
+    }
+
+    pagingControls.on('click', '.alltasks', function () {
+        forPagingControls($(this).attr('value'));
         allOutput(idxx);
     });
-
-    $('#pagingControls').on('click', '.compltasks', function () {
-        idxx = $(this).parent().attr('id');
-        idxx = idxx.replace(/pageIndex/g, "");
-        pageIndexAllCheck = idxx;
-        $('.adding-task-li').remove();
+    pagingControls.on('click', '.compltasks', function () {
+        forPagingControls($(this).attr('value'));
         complOutput(idxx);
     });
 
-    $('#pagingControls').on('click', '.acttasks', function () {
-        idxx = $(this).parent().attr('id');
-        idxx = idxx.replace(/pageIndex/g, "");
-        pageIndexAllCheck = idxx;
-        $('.adding-task-li').remove();
+    pagingControls.on('click', '.acttasks', function () {
+        forPagingControls($(this).attr('value'));
         activeOutput(idxx);
     });
 
+    function remAddingTaskLi(){
+        let adding_task_li = $('.adding-task-li');
+        adding_task_li.remove();
+    }
 });
+
+
+
+
