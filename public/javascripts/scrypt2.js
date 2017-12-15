@@ -13,7 +13,8 @@ $(function () {
     let stateBD;
     let input = $('#input');
     let task_list = $('#task-list');
-    let taskInput = $('#taskInput');
+    // let taskInput = $('#taskInput');
+    let taskInput = $('#test');
     let pagingControls = $('#pagingControls');
     let tasklist_task = $('.task-list__tasks');
 
@@ -206,6 +207,7 @@ $(function () {
         let th = $(this).parent().attr('id');
         console.log('taskArray[th].id-- ', taskArray[th].id);
         doneUndone(th);
+        console.log('>>>> CHANGE STATE <<<<', stateBD, taskArray[th]._id, taskArray[th].text)
         changeState(stateBD, taskArray[th]._id, taskArray[th].text);
     });
 
@@ -217,6 +219,7 @@ $(function () {
         for (const i of taskArray) {
             i.state = condition;
         }
+        console.log('>>>> CHANGE STATE ALL <<<<', condition);
         changeStateAll(condition);
         counter();
     });

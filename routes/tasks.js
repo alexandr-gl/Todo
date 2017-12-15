@@ -41,21 +41,23 @@ router.delete('/', function(req, res, next){
 });
 
 router.put('/put', function (req, res) {
+    console.log('>>> ALL TASKS STATE <<<<', req.body);
     req.body.state = JSON.parse(req.body.state);
     modelTask.update({state: !req.body.state}, {$set: {state: req.body.state}}, {multi:true}, function (err, num) {
             if (err) {
                 return res.send({error: 'Tasks not updated'});
             }
-            res.status(200).send('checked', num);
+            res.status(200);
         });
 });
 
 router.put('/:id', function (req, res) {
+    console.log('>>>> CHANGE STATE ON SERVER <<<<', req.body);
     modelTask.update({_id: req.params.id}, {$set: {state: req.body.state, text: req.body.text}}, function (err, num) {
             if (err) {
                 return res.send({error: 'Task not update'});
             }
-            res.status(200).send('checked', num);
+            res.status(200);
         });
 });
 
